@@ -5,6 +5,7 @@ import br.com.zup.author.repositories.AuthorRepository
 import br.com.zup.author.responses.AuthorDetailsResponse
 import br.com.zup.author.responses.AuthorResponse
 import br.com.zup.core.exceptions.ApiErrorException
+import io.micronaut.data.model.Pageable
 import io.micronaut.http.HttpResponse
 import io.micronaut.http.HttpStatus
 import io.micronaut.http.annotation.Controller
@@ -13,23 +14,26 @@ import io.micronaut.http.annotation.PathVariable
 import io.micronaut.http.annotation.QueryValue
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
+import javax.transaction.Transactional
 
 @Controller("/authors")
 class FindAuthorController(
     val authorRepository: AuthorRepository
 ) {
 
-    val logger: Logger = LoggerFactory.getLogger(javaClass)
+    private val logger: Logger = LoggerFactory.getLogger(javaClass)
 
     @Get
-    fun find(@QueryValue(defaultValue = "") email: String): HttpResponse<Any> {
+    @Transactional
+    fun find(@QueryValue(defaultValue = "") email: String, pageable: Pageable): HttpResponse<Any> {
         if(email.isBlank()){
-            return findAll()
+            return findAll(pageable)
         }
         return findByEmail(email)
     }
 
     @Get("/{id}")
+    @Transactional
     fun findById(@PathVariable id: Long): HttpResponse<AuthorDetailsResponse> {
         val author: Author = authorRepository.findById(id).orElseThrow {
             ApiErrorException(HttpStatus.NOT_FOUND, "Autor não encontrado")
@@ -51,13 +55,13 @@ class FindAuthorController(
         return HttpResponse.ok(AuthorDetailsResponse(author))
     }
 
-    private fun findAll(): HttpResponse<Any> {
-        val authors = authorRepository.findAll()
+    private fun findAll(pageable: Pageable): HttpResponse<Any> {
+        val authors = authorRepository.findAll(pageable)
         val response = authors.map { author ->
             AuthorResponse(author)
         }
 
-        logger.info("Foram listados {} autores", authors.size)
+        logger.info("Foram listados {} autores", authors.count())
 
         return HttpResponse.ok(response)
     }

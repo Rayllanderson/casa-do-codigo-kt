@@ -8,6 +8,7 @@ import io.micronaut.http.annotation.PathVariable
 import io.micronaut.http.annotation.Put
 import io.micronaut.validation.Validated
 import org.slf4j.LoggerFactory
+import javax.transaction.Transactional
 import javax.validation.constraints.NotBlank
 import javax.validation.constraints.Size
 
@@ -16,9 +17,10 @@ import javax.validation.constraints.Size
 class UpdateAuthorController(
     val authorRepository: AuthorRepository
 ) {
-    val logger = LoggerFactory.getLogger(javaClass)
+    private val logger = LoggerFactory.getLogger(javaClass)
 
     @Put
+    @Transactional
     fun update(@PathVariable id: Long, @NotBlank @Size(max = 400) description: String): HttpResponse<Any>{
         val possibleAuthor = authorRepository.findById(id)
 
@@ -27,7 +29,6 @@ class UpdateAuthorController(
         val author = possibleAuthor.get()
 
         author.description = description
-        authorRepository.update(author)
 
         logger.info("Autor {} fez uma alteração na descrição", author.email)
 

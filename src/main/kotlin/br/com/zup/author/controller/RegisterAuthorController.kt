@@ -10,6 +10,7 @@ import io.micronaut.http.uri.UriBuilder
 import io.micronaut.validation.Validated
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
+import javax.transaction.Transactional
 import javax.validation.Valid
 
 @Validated
@@ -18,9 +19,10 @@ class RegisterAuthorController(
     val authorRepository: AuthorRepository
 ) {
 
-    val logger: Logger = LoggerFactory.getLogger(javaClass)
+    private val logger: Logger = LoggerFactory.getLogger(javaClass)
 
     @Post
+    @Transactional
     fun register(@Body @Valid request: AuthorPostRequest): HttpResponse<Any>{
 
         val author: Author = request.toAuthor()
