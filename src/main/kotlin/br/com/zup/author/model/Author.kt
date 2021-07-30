@@ -24,7 +24,7 @@ class Author (
 
     @field:NotBlank @field:Size(max = 400)
     @field:Column(nullable = false)
-    val description: String,
+    var description: String,
 ){
     @Id
     @GeneratedValue
