@@ -10,6 +10,7 @@ import io.micronaut.http.HttpStatus
 import io.micronaut.http.annotation.Controller
 import io.micronaut.http.annotation.Get
 import io.micronaut.http.annotation.PathVariable
+import io.micronaut.http.annotation.QueryValue
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
@@ -21,15 +22,11 @@ class FindAuthorController(
     val logger: Logger = LoggerFactory.getLogger(javaClass)
 
     @Get
-    fun findAll(): HttpResponse<List<AuthorResponse>> {
-        val authors = authorRepository.findAll()
-        val response = authors.map { author ->
-            AuthorResponse(author)
+    fun find(@QueryValue(defaultValue = "") email: String): HttpResponse<Any> {
+        if(email.isBlank()){
+            return findAll()
         }
-
-        logger.info("Foram listados {} autores", authors.size)
-
-        return HttpResponse.ok(response)
+        return findByEmail(email)
     }
 
     @Get("/{id}")
@@ -41,5 +38,27 @@ class FindAuthorController(
         logger.info("Autor {} foi consultado", author.email)
 
         return HttpResponse.ok(AuthorDetailsResponse(author))
+    }
+
+    private fun findByEmail(email: String): HttpResponse<Any> {
+        val possibleAuthor = authorRepository.findByEmail(email)
+        if (possibleAuthor.isEmpty) return HttpResponse.notFound()
+
+        val author = possibleAuthor.get()
+
+        logger.info("Autor {} foi consultado", author.email)
+
+        return HttpResponse.ok(AuthorDetailsResponse(author))
+    }
+
+    private fun findAll(): HttpResponse<Any> {
+        val authors = authorRepository.findAll()
+        val response = authors.map { author ->
+            AuthorResponse(author)
+        }
+
+        logger.info("Foram listados {} autores", authors.size)
+
+        return HttpResponse.ok(response)
     }
 }
