@@ -8,10 +8,8 @@ import br.com.zup.core.exceptions.ApiErrorException
 import io.micronaut.data.model.Pageable
 import io.micronaut.http.HttpResponse
 import io.micronaut.http.HttpStatus
-import io.micronaut.http.annotation.Controller
-import io.micronaut.http.annotation.Get
-import io.micronaut.http.annotation.PathVariable
-import io.micronaut.http.annotation.QueryValue
+import io.micronaut.http.MediaType
+import io.micronaut.http.annotation.*
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import javax.transaction.Transactional
@@ -30,6 +28,14 @@ class FindAuthorController(
             return findAll(pageable)
         }
         return findByEmail(email)
+    }
+
+    @Get(value = "/xml")
+    @Transactional
+    @Produces(MediaType.APPLICATION_XML)
+    fun findInXml(): HttpResponse<Any> {
+        val authors = authorRepository.findAll().map { AuthorResponse(it) }
+        return HttpResponse.ok(authors)
     }
 
     @Get("/{id}")
