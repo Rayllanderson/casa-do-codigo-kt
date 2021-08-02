@@ -1,8 +1,8 @@
 package br.com.zup.author.requests
 
-import br.com.zup.author.model.Address
 import br.com.zup.author.model.Author
 import br.com.zup.author.responses.AddressResponse
+import br.com.zup.core.validators.Unique
 import io.micronaut.core.annotation.Introspected
 import javax.validation.constraints.Email
 import javax.validation.constraints.NotBlank
@@ -15,6 +15,7 @@ data class AuthorPostRequest(
 
     @field:Email
     @field:NotBlank
+    @field:Unique(entity = Author::class, field = "email")
     val email: String,
 
     @field:NotBlank
