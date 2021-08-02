@@ -1,4 +1,5 @@
 package br.com.zup.author.controller
+import br.com.zup.author.clients.AddressConsultantClient
 import br.com.zup.author.model.Author
 import br.com.zup.author.repositories.AuthorRepository
 import br.com.zup.author.requests.AuthorPostRequest
@@ -16,7 +17,8 @@ import javax.validation.Valid
 @Validated
 @Controller("/authors")
 class RegisterAuthorController(
-    val authorRepository: AuthorRepository
+    val authorRepository: AuthorRepository,
+    val addressConsultant: AddressConsultantClient
 ) {
 
     private val logger: Logger = LoggerFactory.getLogger(javaClass)
@@ -25,7 +27,9 @@ class RegisterAuthorController(
     @Transactional
     fun register(@Body @Valid request: AuthorPostRequest): HttpResponse<Any>{
 
-        val author: Author = request.toAuthor()
+        val addressResponse = addressConsultant.consult(request.zipCode).body()!!
+
+        val author: Author = request.toAuthor(addressResponse)
         authorRepository.save(author)
 
         logger.info("Autor de email {} cadastrado as {} com id {}", author.email, author.registeredIn, author.id)

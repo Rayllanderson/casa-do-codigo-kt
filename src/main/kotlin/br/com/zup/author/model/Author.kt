@@ -1,10 +1,7 @@
 package br.com.zup.author.model
 
 import java.time.LocalDate
-import javax.persistence.Column
-import javax.persistence.Entity
-import javax.persistence.GeneratedValue
-import javax.persistence.Id
+import javax.persistence.*
 import javax.validation.constraints.Email
 import javax.validation.constraints.NotBlank
 import javax.validation.constraints.NotNull
@@ -25,6 +22,10 @@ class Author (
     @field:NotBlank @field:Size(max = 400)
     @field:Column(nullable = false)
     var description: String,
+
+    @field:Embedded
+    @field:NotNull
+    val address: Address
 ){
     @Id
     @GeneratedValue

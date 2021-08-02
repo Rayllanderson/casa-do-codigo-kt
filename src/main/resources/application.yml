@@ -8,6 +8,10 @@ datasources:
     username: ${DB_USER:postgres}
     password: ${DB_PASSWORD:12345}
 
+address:
+  consultant:
+    url: https://viacep.com.br/ws
+
 jpa:
   default:
     properties:
