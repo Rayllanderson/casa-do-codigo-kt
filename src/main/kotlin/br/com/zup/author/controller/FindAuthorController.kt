@@ -47,7 +47,7 @@ class FindAuthorController(
 
         logger.info("Autor {} foi consultado", author.email)
 
-        return HttpResponse.ok(AuthorDetailsResponse(author))
+        return HttpResponse.ok(AuthorDetailsResponse.fromAuthor(author))
     }
 
     private fun findByEmail(email: String): HttpResponse<Any> {
@@ -58,7 +58,7 @@ class FindAuthorController(
 
         logger.info("Autor {} foi consultado", author.email)
 
-        return HttpResponse.ok(AuthorDetailsResponse(author))
+        return HttpResponse.ok(AuthorDetailsResponse.fromAuthor(author))
     }
 
     private fun findAll(pageable: Pageable): HttpResponse<Any> {

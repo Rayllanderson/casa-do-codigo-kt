@@ -32,7 +32,7 @@ class UpdateAuthorController(
 
         logger.info("Autor {} fez uma alteração na descrição", author.email)
 
-        return HttpResponse.ok(AuthorDetailsResponse(author))
+        return HttpResponse.ok(AuthorDetailsResponse.fromAuthor(author))
     }
 
 }
